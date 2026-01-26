@@ -21,8 +21,27 @@ public static class SetsAndMaps
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
     {
-        // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        var seen = new HashSet<string>(words);
+        var result = new List<string>();
+
+        foreach (var word in words)
+        {
+            if (word[0] == word[1])
+                continue; // Skip same letter words like 'aa'
+
+
+                string reversed = new string(new char[] { word[1], word[0] });
+                if (seen.Contains(reversed))
+                {
+                    result.Add($"{word} & {reversed}");
+                else
+                {
+                    // Mark this word as seen to avoid duplicates
+                    seen.Add(word);
+                }
+            }
+        }
+        return result;
     }
 
     /// <summary>
@@ -36,17 +55,35 @@ public static class SetsAndMaps
     /// </summary>
     /// <param name="filename">The name of the file to read</param>
     /// <returns>fixed array of divisors</returns>
-    public static Dictionary<string, int> SummarizeDegrees(string filename)
-    {
-        var degrees = new Dictionary<string, int>();
-        foreach (var line in File.ReadLines(filename))
-        {
-            var fields = line.Split(",");
-            // TODO Problem 2 - ADD YOUR CODE HERE
-        }
+   public static Dictionary<string, int> SummarizeDegrees(string filename)
+{
+    var degrees = new Dictionary<string, int>();
 
-        return degrees;
+    foreach (var line in File.ReadLines(filename).Skip(1)) // skip header
+    {
+        var fields = line.Split(",");
+
+        if (fields.Length >= 4)
+        {
+            var degree = fields[3].Trim();
+
+            if (!string.IsNullOrEmpty(degree))
+            {
+                if (degrees.TryGetValue(degree, out int count))
+                {
+                    degrees[degree] = count + 1;
+                }
+                else
+                {
+                    degrees[degree] = 1;
+                }
+            }
+        }
     }
+
+    return degrees;
+}
+
 
     /// <summary>
     /// Determine if 'word1' and 'word2' are anagrams.  An anagram
