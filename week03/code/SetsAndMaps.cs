@@ -19,30 +19,35 @@ public static class SetsAndMaps
     /// that there were no duplicates) and therefore should not be returned.
     /// </summary>
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
-    public static string[] FindPairs(string[] words)
+public static string[] FindPairs(string[] words)
+{
+    var seen = new HashSet<string>();
+    var result = new List<string>();
+
+    foreach (var word in words)
     {
-        var seen = new HashSet<string>(words);
-        var result = new List<string>();
+        if (word.Length != 2) 
+            continue; // Only handle 2-letter words
 
-        foreach (var word in words)
+        if (word[0] == word[1])
+            continue; // Skip same-letter words like "aa"
+
+        string reversed = new string(new char[] { word[1], word[0] });
+
+        // If we've already seen the reversed word, we found a pair
+        if (seen.Contains(reversed))
         {
-            if (word[0] == word[1])
-                continue; // Skip same letter words like 'aa'
-
-
-                string reversed = new string(new char[] { word[1], word[0] });
-                if (seen.Contains(reversed))
-                {
-                    result.Add($"{word} & {reversed}");
-                else
-                {
-                    // Mark this word as seen to avoid duplicates
-                    seen.Add(word);
-                }
-            }
+            result.Add($"{word} & {reversed}");
         }
-        return result;
+        else
+            {
+            // Mark this word as seen
+            seen.Add(word);
+        }
     }
+
+    return result.ToArray();
+}
 
     /// <summary>
     /// Read a census file and summarize the degrees (education)
@@ -55,7 +60,7 @@ public static class SetsAndMaps
     /// </summary>
     /// <param name="filename">The name of the file to read</param>
     /// <returns>fixed array of divisors</returns>
-   public static Dictionary<string, int> SummarizeDegrees(string filename)
+    public static Dictionary<string, int> SummarizeDegrees(string filename)
 {
     var degrees = new Dictionary<string, int>();
 
@@ -86,28 +91,64 @@ public static class SetsAndMaps
 
 
     /// <summary>
-    /// Determine if 'word1' and 'word2' are anagrams.  An anagram
-    /// is when the same letters in a word are re-organized into a 
-    /// new word.  A dictionary is used to solve the problem.
-    /// 
-    /// Examples:
-    /// is_anagram("CAT","ACT") would return true
-    /// is_anagram("DOG","GOOD") would return false because GOOD has 2 O's
-    /// 
-    /// Important Note: When determining if two words are anagrams, you
-    /// should ignore any spaces.  You should also ignore cases.  For 
-    /// example, 'Ab' and 'Ba' should be considered anagrams
-    /// 
-    /// Reminder: You can access a letter by index in a string by 
-    /// using the [] notation.
-    /// </summary>
-    public static bool IsAnagram(string word1, string word2)
+    ////// <summary>
+/// Determine if 'word1' and 'word2' are anagrams.
+/// An anagram is when the same letters in a word are re-organized into a new word.
+/// A dictionary is used to solve the problem.
+/// 
+/// Examples:
+/// IsAnagram("CAT","ACT") would return true
+/// IsAnagram("DOG","GOOD") would return false because GOOD has 2 O's
+/// 
+/// Important Note: When determining if two words are anagrams, you
+/// should ignore any spaces. You should also ignore cases. For 
+/// example, 'Ab' and 'Ba' should be considered anagrams.
+/// </summary>
+public static bool IsAnagram(string word1, string word2)
+{
+    // Normalize input: remove spaces and convert to lowercase
+    word1 = word1.Replace(" ", "").ToLower();
+    word2 = word2.Replace(" ", "").ToLower();
+
+    // Quick length check
+    if (word1.Length != word2.Length)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
         return false;
     }
 
-    /// <summary>
+    // Build frequency dictionary for word1
+    Dictionary<char, int> freq1 = new Dictionary<char, int>();
+    foreach (char c in word1)
+    {
+        if (freq1.ContainsKey(c))
+            freq1[c]++;
+        else
+            freq1[c] = 1;
+    }
+
+    // Build frequency dictionary for word2
+    Dictionary<char, int> freq2 = new Dictionary<char, int>();
+    foreach (char c in word2)
+    {
+        if (freq2.ContainsKey(c))
+            freq2[c]++;
+        else
+            freq2[c] = 1;
+    }
+
+    // Compare dictionaries
+    if (freq1.Count != freq2.Count)
+        return false;
+
+    foreach (var kvp in freq1)
+    {
+        if (!freq2.ContainsKey(kvp.Key) || freq2[kvp.Key] != kvp.Value)
+            return false;
+    }
+
+    return true;
+}
+/// <summary>
     /// This function will read JSON (Javascript Object Notation) data from the 
     /// United States Geological Service (USGS) consisting of earthquake data.
     /// The data will include all earthquakes in the current day.
