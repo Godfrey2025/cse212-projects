@@ -41,70 +41,70 @@ public static class Recursion
     /// and the length of the letters list).
     /// </summary>
     public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
+{
+    // Base case: permutation is complete
+    if (word.Length == size)
     {
-        // TODO Start Problem 2
+        results.Add(word);
+        return;
     }
+
+    // Try choosing each letter
+    for (int i = 0; i < letters.Length; i++)
+    {
+        char chosen = letters[i];
+
+        // Remove chosen letter from remaining letters
+        string remaining =
+            letters[..i] + letters[(i + 1)..];
+
+        // Recurse with updated word
+        PermutationsChoose(
+            results,
+            remaining,
+            size,
+            word + chosen
+        );
+    }
+}
+
+    // TODO Start Problem 2
 
     /// <summary>
     /// #############
-    /// # Problem 3 #
+/// # Problem 3 #
     /// #############
-    /// Imagine that there was a staircase with 's' stairs.  
-    /// We want to count how many ways there are to climb 
-    /// the stairs.  If the person could only climb one 
-    /// stair at a time, then the total would be just one.  
-    /// However, if the person could choose to climb either 
-    /// one, two, or three stairs at a time (in any order), 
-    /// then the total possibilities become much more 
-    /// complicated.  If there were just three stairs,
-    /// the possible ways to climb would be four as follows:
-    ///
-    ///     1 step, 1 step, 1 step
-    ///     1 step, 2 step
-    ///     2 step, 1 step
-    ///     3 step
-    ///
-    /// With just one step to go, the ways to get
-    /// to the top of 's' stairs is to either:
-    ///
-    /// - take a single step from the second to last step, 
-    /// - take a double step from the third to last step, 
-    /// - take a triple step from the fourth to last step
-    ///
-    /// We don't need to think about scenarios like taking two 
-    /// single steps from the third to last step because this
-    /// is already part of the first scenario (taking a single
-    /// step from the second to last step).
-    ///
-    /// These final leaps give us a sum:
-    ///
-    /// CountWaysToClimb(s) = CountWaysToClimb(s-1) + 
-    ///                       CountWaysToClimb(s-2) +
-    ///                       CountWaysToClimb(s-3)
-    ///
-    /// To run this function for larger values of 's', you will need
-    /// to update this function to use memoization.  The parameter
-    /// 'remember' has already been added as an input parameter to 
-    /// the function for you to complete this task.
+    /// A child is running up a staircase with n steps and can hop either 1 step, 2 steps, or 3 steps at a time.  
+    /// Implement a method to count how many possible ways the child can run up the stairs.
     /// </summary>
     public static decimal CountWaysToClimb(int s, Dictionary<int, decimal>? remember = null)
-    {
-        // Base Cases
-        if (s == 0)
-            return 0;
-        if (s == 1)
-            return 1;
-        if (s == 2)
-            return 2;
-        if (s == 3)
-            return 4;
+{
+    // Initialize dictionary if first call
+    if (remember == null)
+        remember = new Dictionary<int, decimal>();
 
-        // TODO Start Problem 3
+    // Check memoized result
+    if (remember.ContainsKey(s))
+        return remember[s];
 
-        // Solve using recursion
-        decimal ways = CountWaysToClimb(s - 1) + CountWaysToClimb(s - 2) + CountWaysToClimb(s - 3);
-        return ways;
-    }
+    // Base cases
+    if (s == 0) return 0;
+    if (s == 1) return 1;
+    if (s == 2) return 2;
+    if (s == 3) return 4;
+
+    // Recursive calculation WITH memoization
+    decimal ways =
+        CountWaysToClimb(s - 1, remember) +
+        CountWaysToClimb(s - 2, remember) +
+        CountWaysToClimb(s - 3, remember);
+
+    // Store result
+    remember[s] = ways;
+
+    return ways;
+}
+
 
     /// <summary>
     /// #############
@@ -121,6 +121,18 @@ public static class Recursion
     /// </summary>
     public static void WildcardBinary(string pattern, List<string> results)
     {
+        // Find the index of the first wildcard
+        int index = pattern.IndexOf('*');
+        // Base Case: If there are no wildcards, add the pattern to results
+        if (index == -1)
+        {
+            results.Add(pattern);
+            return;
+        }
+        // Replace the wildcard with '0' and '1' and recurse
+        WildcardBinary(pattern[..index] + '0' + pattern[(index + 1)..], results);
+        WildcardBinary(pattern[..index] + '1' + pattern[(index + 1)..], results);
+
         // TODO Start Problem 4
     }
 
